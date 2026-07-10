@@ -314,6 +314,10 @@ function App() {
   // 현재 활성화된 방 구독(Subscription) 참조 (방 퇴장 시 정상 수신 해제용)
   const roomSubscriptionRef = useRef<any>(null);
 
+  // 수사관의 추측 정보 공유용 브로드캐스트 구독 참조
+  const gameSubscriptionRef = useRef<any>(null);
+  const lastReceivedGuessRef = useRef<any>(null);
+
   // 실시간 게임 로그 자동 스크롤을 위한 참조
   const logPanelRef = useRef<HTMLDivElement>(null);
 
@@ -944,21 +948,53 @@ function App() {
 
     // 도망자(Fugitive) 시점에서 수사관의 수사 성공/실패 토스트 및 로그 보완
     if (playerView.viewer === 'FUGITIVE') {
+      const guess = lastReceivedGuessRef.current;
+
       // 일반 턴에서 수사관의 차례가 끝나고 도망자의 차례가 시작되었을 때
       if (prevView.currentTurn === 'MARSHAL' && playerView.currentTurn === 'FUGITIVE') {
-        if (newlyRevealedCount > 0) {
-          addToast({ kind: 'warning', title: '수사 성공당함', message: `🚨 수사관이 내 은신처를 밝혀냈습니다: ${newlyRevealedDetails.join(', ')}` });
+        if (guess) {
+          lastReceivedGuessRef.current = null; // 사용 후 초기화
+          const targetNames = guess.targets.map((t: any) => `은신처${t.position}(${t.number}번)`).join(', ');
+          const allSucceeded = guess.targets.every((t: any) => playerView.board[t.position]?.revealed);
+
+          if (allSucceeded) {
+            addToast({ kind: 'warning', title: '수사 성공당함', message: `🚨 수사관이 내 은신처 수사에 성공했습니다: ${targetNames}` });
+            newLogs.push(`👮 수사관이 ${targetNames} 수사에 성공했습니다!`);
+          } else {
+            addToast({ kind: 'success', title: '수사 회피 성공', message: `👮 수사관이 은신처 추색에 실패했습니다: ${targetNames}` });
+            newLogs.push(`❌ 수사관이 ${targetNames} 수사에 실패했습니다.`);
+            playSynthSound('success');
+          }
         } else {
-          addToast({ kind: 'success', title: '수사 회피 성공', message: '👮 수사관이 은신처 추색에 실패했습니다!' });
-          newLogs.push(`❌ 수사관이 은신처 추색에 실패했습니다.`);
-          playSynthSound('success');
+          // fallback (수신 데이터 유실 대비)
+          if (newlyRevealedCount > 0) {
+            addToast({ kind: 'warning', title: '수사 성공당함', message: `🚨 수사관이 내 은신처를 밝혀냈습니다: ${newlyRevealedDetails.join(', ')}` });
+          } else {
+            addToast({ kind: 'success', title: '수사 회피 성공', message: '👮 수사관이 은신처 추색에 실패했습니다!' });
+            newLogs.push(`❌ 수사관이 은신처 추색에 실패했습니다.`);
+            playSynthSound('success');
+          }
         }
       }
 
       // 맨헌트(최후의 추격) 진행 중 수사관의 추측 성공 감지
       if (prevView.phase === 'MANHUNT' && playerView.phase === 'MANHUNT') {
-        if (newlyRevealedCount > 0) {
+        if (guess) {
+          lastReceivedGuessRef.current = null;
+          const targetNames = guess.targets.map((t: any) => `은신처${t.position}(${t.number}번)`).join(', ');
+          addToast({ kind: 'warning', title: '최후의 추격 성공당함', message: `🚨 수사관이 내 은신처를 찾아냈습니다: ${targetNames}` });
+          newLogs.push(`👮 수사관이 최후의 추격으로 ${targetNames} 수사에 성공했습니다!`);
+        } else if (newlyRevealedCount > 0) {
           addToast({ kind: 'warning', title: '최후의 추격 성공당함', message: `🚨 수사관이 내 은신처를 찾아냈습니다: ${newlyRevealedDetails.join(', ')}` });
+        }
+      }
+
+      // 맨헌트 실패로 게임 종료 및 도망자 승리 시 로그 보정
+      if (prevView.phase === 'MANHUNT' && playerView.phase === 'ENDED' && playerView.winner === 'FUGITIVE') {
+        if (guess) {
+          lastReceivedGuessRef.current = null;
+          const targetNames = guess.targets.map((t: any) => `은신처${t.position}(${t.number}번)`).join(', ');
+          newLogs.push(`❌ 수사관이 최후의 추격(${targetNames})에 실패하여 도망자가 탈출에 성공했습니다!`);
         }
       }
     }
@@ -1130,6 +1166,10 @@ function App() {
     if (roomSubscriptionRef.current) {
       roomSubscriptionRef.current.unsubscribe();
     }
+    if (gameSubscriptionRef.current) {
+      gameSubscriptionRef.current.unsubscribe();
+      gameSubscriptionRef.current = null;
+    }
     
     const sub = client.subscribe(`/topic/room/${rId}`, (msg) => {
       const state: RoomState = JSON.parse(msg.body);
@@ -1158,6 +1198,10 @@ function App() {
         if (roomSubscriptionRef.current) {
           roomSubscriptionRef.current.unsubscribe();
           roomSubscriptionRef.current = null;
+        }
+        if (gameSubscriptionRef.current) {
+          gameSubscriptionRef.current.unsubscribe();
+          gameSubscriptionRef.current = null;
         }
         setScreen('LOBBY');
         return;
@@ -1190,6 +1234,19 @@ function App() {
     });
 
     roomSubscriptionRef.current = sub;
+
+    // 수사관의 추측 정보(Failed guess numbers 포함)를 실시간 공유하기 위한 토픽 구독
+    const gameSub = client.subscribe(`/topic/game/${rId}/guesses`, (msg) => {
+      try {
+        const guess = JSON.parse(msg.body);
+        if (guess.guesserId !== playerId) {
+          lastReceivedGuessRef.current = guess;
+        }
+      } catch (e) {
+        console.error("Failed to parse guess broadcast", e);
+      }
+    });
+    gameSubscriptionRef.current = gameSub;
 
     // 대기실 입장 즉시 백엔드로부터 최신 방 상태(RoomState) 동기화 (방장/게스트 상태 즉시 렌더링)
     try {
@@ -1507,6 +1564,13 @@ function App() {
         targets: [{ position: guessTargetIndex, number: parsedNum }]
       })
     });
+    stompClientRef.current.publish({
+      destination: `/topic/game/${roomId}/guesses`,
+      body: JSON.stringify({
+        targets: [{ position: guessTargetIndex, number: parsedNum }],
+        guesserId: playerId
+      })
+    });
   };
 
   const handleMultiGuessMove = () => {
@@ -1558,6 +1622,13 @@ function App() {
         targets
       })
     });
+    stompClientRef.current.publish({
+      destination: `/topic/game/${roomId}/guesses`,
+      body: JSON.stringify({
+        targets,
+        guesserId: playerId
+      })
+    });
 
     setIsMultiGuessMode(false);
     setMultiGuesses([]);
@@ -1582,6 +1653,13 @@ function App() {
       body: JSON.stringify({
         type: 'MANHUNT_GUESS',
         target: { position: targetIdx, number: val }
+      })
+    });
+    stompClientRef.current.publish({
+      destination: `/topic/game/${roomId}/guesses`,
+      body: JSON.stringify({
+        targets: [{ position: targetIdx, number: val }],
+        guesserId: playerId
       })
     });
 
@@ -1622,6 +1700,10 @@ function App() {
     if (roomSubscriptionRef.current) {
       roomSubscriptionRef.current.unsubscribe();
       roomSubscriptionRef.current = null;
+    }
+    if (gameSubscriptionRef.current) {
+      gameSubscriptionRef.current.unsubscribe();
+      gameSubscriptionRef.current = null;
     }
     
     localStorage.removeItem('fugitive_roomId');
