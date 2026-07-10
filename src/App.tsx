@@ -2098,7 +2098,7 @@ function App() {
                     </>
                   ) : (
                     <div style={{ color: 'var(--text-tertiary)', fontStyle: 'italic', marginTop: '1.2rem', fontSize: '0.85rem' }}>
-                      다른 플레이어가 참여하기를 대기하는 중...
+                      다른 플레이어가 참여하기를 <br /> 대기하는 중...
                     </div>
                   )}
                 </div>
@@ -2213,7 +2213,7 @@ function App() {
                         </h4>
                         <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                           <div>• 카드를 내어 순서대로 증가하는 은신처를 설치합니다.</div>
-                          <div>• 직전 은신처와의 번호 차이는 기본 **최대 3**입니다.</div>
+                          <div>• 직전 은신처와의 번호 차이는 기본 최대 3입니다.</div>
                           <div>• 더 멀리 이동하려면 발자국 카드(도약)를 추가로 같이 내야 합니다.</div>
                         </div>
                       </div>
