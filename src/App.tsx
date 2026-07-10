@@ -3353,8 +3353,8 @@ function App() {
         >
           <div className="draw-effect-container">
             <h2 className={`draw-effect-title ${drawnCardEffect.role.toLowerCase()}`}>
-              {drawnCardEffect.role === 'FUGITIVE' ? '카드 흭득!' : '카드 흭득!'}
-            </h2>추측하기: 보드 위의 물음표(?) 은신처를 클릭하면 해당하는 칸의 숫자를 추측할 수 있습니다.
+              {drawnCardEffect.role === 'FUGITIVE' ? '카드 획득!' : '카드 획득!'}
+            </h2>
             <div className={`draw-effect-card ${drawnCardEffect.role.toLowerCase()}`}>
               <div className="draw-effect-badge">CARD</div>
               <div className="draw-effect-number">{drawnCardEffect.number}</div>
