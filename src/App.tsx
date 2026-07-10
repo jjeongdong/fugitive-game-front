@@ -3213,6 +3213,7 @@ function App() {
                   <div className="notepad-grid">
                     {Array.from({ length: 43 }, (_, i) => {
                       const isRevealedHideout = playerView.board.some(h => h.revealed && h.number === i);
+                      const isPrivateHideout = playerView.viewer === 'FUGITIVE' && playerView.board.some(h => !h.revealed && h.number === i);
                       const isHandCard = playerView.hand && playerView.hand.some(c => c.number === i);
                       const isSprintCard = playerView.viewer === 'FUGITIVE'
                         ? playerView.board.some(h => h.sprintCards?.some(c => c.number === i))
@@ -3224,6 +3225,9 @@ function App() {
                       if (isRevealedHideout) {
                         cellClass = 'revealed';
                         cellTitle = `공개된 은신처 (${i}번)`;
+                      } else if (isPrivateHideout) {
+                        cellClass = 'private-hideout';
+                        cellTitle = `내 비공개 은신처 (${i}번)`;
                       } else if (isHandCard) {
                         cellClass = 'hand';
                         cellTitle = `내 손패 (${i}번)`;
@@ -3243,8 +3247,8 @@ function App() {
                         }
                       }
 
-                      const hasAutoState = isRevealedHideout || isHandCard || isSprintCard;
-                      const canClick = !hasAutoState;
+                      const hasAutoState = isRevealedHideout || isPrivateHideout || isHandCard || isSprintCard;
+                      const canClick = playerView.viewer !== 'FUGITIVE' && !hasAutoState;
 
                       return (
                         <div 
@@ -3279,6 +3283,12 @@ function App() {
                         <span style={{ display: 'inline-block', width: '10px', height: '10px', borderRadius: '50%', backgroundColor: 'var(--primary)' }} />
                         <span>공개 은신처</span>
                       </div>
+                      {playerView.viewer === 'FUGITIVE' && (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                          <span style={{ display: 'inline-block', width: '10px', height: '10px', borderRadius: '50%', border: '2px solid var(--primary)', backgroundColor: 'var(--primary-bg)' }} />
+                          <span>비공개 은신처</span>
+                        </div>
+                      )}
                       <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                         <span style={{ display: 'inline-block', width: '10px', height: '10px', borderRadius: '50%', backgroundColor: 'var(--success)' }} />
                         <span>내 손패</span>
@@ -3289,17 +3299,19 @@ function App() {
                       </div>
                     </div>
                     
-                    {/* 두 번째 줄: 수동 마킹 상태 */}
-                    <div style={{ display: 'flex', gap: '0.8rem', flexWrap: 'wrap', justifyContent: 'center' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                        <span style={{ display: 'inline-block', width: '10px', height: '10px', borderRadius: '50%', border: '1px solid var(--border-color)', backgroundColor: 'var(--bg-page)', textDecoration: 'line-through', fontSize: '8px', lineHeight: '10px', textAlign: 'center', color: 'var(--text-tertiary)' }} />
-                        <span>제외 (클릭)</span>
+                    {/* 두 번째 줄: 수동 마킹 상태 (수사관 전용) */}
+                    {playerView.viewer === 'MARSHAL' && (
+                      <div style={{ display: 'flex', gap: '0.8rem', flexWrap: 'wrap', justifyContent: 'center' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                          <span style={{ display: 'inline-block', width: '10px', height: '10px', borderRadius: '50%', border: '1px solid var(--border-color)', backgroundColor: 'var(--bg-page)', textDecoration: 'line-through', fontSize: '8px', lineHeight: '10px', textAlign: 'center', color: 'var(--text-tertiary)' }} />
+                          <span>제외 (클릭)</span>
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                          <span style={{ display: 'inline-block', width: '10px', height: '10px', borderRadius: '50%', border: '1px solid var(--danger)', backgroundColor: 'var(--danger-bg)' }} />
+                          <span>용의 (클릭)</span>
+                        </div>
                       </div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                        <span style={{ display: 'inline-block', width: '10px', height: '10px', borderRadius: '50%', border: '1px solid var(--danger)', backgroundColor: 'var(--danger-bg)' }} />
-                        <span>용의 (클릭)</span>
-                      </div>
-                    </div>
+                    )}
                   </div>
 
                 </div>

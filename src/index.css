@@ -625,7 +625,7 @@ p {
 
 .notepad-cell.private-hideout {
   background: var(--primary-bg) !important;
-  border: 1.5px dashed var(--primary) !important;
+  border: 2px solid var(--primary) !important;
   color: var(--primary) !important;
   font-weight: 700;
   transform: none;
