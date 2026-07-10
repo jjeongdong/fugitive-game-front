@@ -1,0 +1,1008 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+:root {
+  /* Default: Dark Theme (matches default state in App.tsx) */
+  --bg-page: #0f172a;
+  --bg-card: #1e293b;
+  --bg-card-hover: #334155;
+  --bg-card-down: #1b223c;
+  --border-color: #334155;
+  
+  --primary: #3182f6; /* Toss Blue */
+  --primary-hover: #5294f7;
+  --primary-bg: rgba(49, 130, 246, 0.12);
+  
+  --text-primary: #f9fafb;
+  --text-secondary: #adb5bd;
+  --text-tertiary: #6c757d;
+  --text-white: #ffffff;
+  
+  --success: #10b981;
+  --success-bg: rgba(16, 185, 129, 0.12);
+  --danger: #ef4444;
+  --danger-bg: rgba(239, 68, 68, 0.12);
+  --warning: #f59e0b;
+  --warning-bg: rgba(245, 158, 11, 0.12);
+  
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.2);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.4);
+  
+  --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-display: var(--font-sans);
+  --font-body: var(--font-sans);
+  
+  --border-radius-sm: 8px;
+  --border-radius-md: 16px;
+  --border-radius-lg: 24px;
+  
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body.light-theme {
+  /* Light Theme overrides */
+  --bg-page: #f2f4f6;
+  --bg-card: #ffffff;
+  --bg-card-hover: #f9fafb;
+  --bg-card-down: #e8eff9;
+  --border-color: #e5e8eb;
+  
+  --primary: #3182f6;
+  --primary-hover: #1b64da;
+  --primary-bg: #eef3fd;
+  
+  --text-primary: #191f28;
+  --text-secondary: #4e5968;
+  --text-tertiary: #8b95a1;
+  --text-white: #ffffff;
+  
+  --success: #10b981;
+  --success-bg: #eefdf2;
+  --danger: #f04438;
+  --danger-bg: #fdf2f2;
+  --warning: #f59e0b;
+  --warning-bg: #fffdf5;
+  
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.02);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.04);
+  --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.06);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--bg-page);
+  color: var(--text-primary);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 2rem 1rem;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+#root {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Base typography */
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+h1 {
+  font-size: 2.5rem;
+  letter-spacing: -0.02em;
+}
+
+h2 {
+  font-size: 1.5rem;
+  padding-bottom: 0.5rem;
+  margin-bottom: 1rem;
+  letter-spacing: -0.01em;
+}
+
+p {
+  color: var(--text-secondary);
+  line-height: 1.6;
+  font-size: 0.95rem;
+}
+
+/* Toss modern simple Header */
+.cardboard-header {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-md);
+  box-shadow: var(--shadow-sm);
+  padding: 1.2rem 1.8rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  position: relative;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.header-title-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.header-title-container h1 {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: var(--primary);
+  letter-spacing: -0.03em;
+  text-shadow: none;
+}
+
+.header-subtitle {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+  letter-spacing: 0;
+  margin-top: 2px;
+  text-transform: none;
+}
+
+/* Sleek Cards */
+.glass-panel {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-md);
+  padding: 1.8rem;
+  box-shadow: var(--shadow-md);
+  transition: all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
+  color: var(--text-primary);
+}
+
+.glass-panel:hover {
+  box-shadow: var(--shadow-lg);
+}
+
+/* Buttons: Toss Style Rounded & Flat */
+.btn {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  padding: 0.75rem 1.5rem;
+  border-radius: var(--border-radius-sm);
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+  border: none;
+  font-size: 0.9rem;
+  letter-spacing: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  box-shadow: none;
+}
+
+.btn-primary {
+  background: var(--primary);
+  color: var(--text-white);
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: var(--primary-hover);
+  transform: translateY(-1px);
+}
+
+.btn-primary:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.btn-secondary {
+  background: var(--primary-bg);
+  color: var(--primary);
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background: var(--primary);
+  color: var(--text-white);
+}
+
+.btn-accent {
+  background: var(--danger);
+  color: var(--text-white);
+}
+
+.btn-accent:hover:not(:disabled) {
+  background: #d32f2f;
+  transform: translateY(-1px);
+}
+
+.btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+/* Board Game Map -> Clean Game Board Section */
+.board-game-map {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-md);
+  padding: 2rem 1.8rem;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.board-game-path {
+  display: grid;
+  grid-template-columns: repeat(9, 85px);
+  gap: 1.8rem 0;
+  padding: 1.5rem 0.5rem;
+  width: max-content;
+  max-width: 100%;
+  overflow-x: auto;
+  justify-content: start;
+  justify-items: center;
+}
+
+/* Connectors */
+.board-connector {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-tertiary);
+  font-size: 0.8rem;
+  user-select: none;
+  width: 100%;
+  height: 120px;
+}
+
+.board-connector.draft {
+  color: var(--primary);
+  animation: pulseConnector 1.5s infinite alternate;
+}
+
+@keyframes pulseConnector {
+  from { opacity: 0.3; }
+  to { opacity: 1; }
+}
+
+.connector-dots {
+  letter-spacing: 1px;
+  font-weight: 500;
+  opacity: 0.4;
+}
+
+.connector-footprints {
+  margin: 0 4px;
+  font-size: 0.85rem;
+  opacity: 0.7;
+}
+
+/* Toss Style Modern Game Cards */
+.game-card {
+  aspect-ratio: 2/3;
+  width: 80px;
+  height: 120px;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.8rem 0.5rem;
+  font-family: var(--font-sans);
+  font-weight: 700;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+  border: 2.5px solid var(--border-color);
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12), 0 2px 4px rgba(0, 0, 0, 0.06);
+}
+
+/* 카드 내부 장식 테두리선 */
+.game-card::before {
+  content: '';
+  position: absolute;
+  top: 5px;
+  left: 5px;
+  right: 5px;
+  bottom: 5px;
+  border: 1px dashed var(--border-color);
+  border-radius: 8px;
+  pointer-events: none;
+  opacity: 0.7;
+  z-index: 1;
+}
+
+.game-card.face-down {
+  background-color: var(--bg-card-down);
+  border: 2.5px solid var(--border-color);
+  box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.2), 0 4px 8px rgba(0, 0, 0, 0.12);
+  background-image: repeating-linear-gradient(45deg, rgba(49, 130, 246, 0.04) 0px, rgba(49, 130, 246, 0.04) 2px, transparent 2px, transparent 10px), linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, rgba(0, 0, 0, 0.05) 100%);
+}
+
+.game-card.face-down::after {
+  content: '?';
+  font-size: 1.8rem;
+  color: var(--primary);
+  opacity: 0.85;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-weight: 800;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+  z-index: 2;
+}
+
+.game-card.face-up {
+  background-color: var(--bg-card);
+  color: var(--text-primary);
+  border: 2.5px solid var(--border-color);
+}
+
+.game-card.face-up .card-num {
+  color: var(--text-primary) !important;
+  z-index: 2;
+}
+
+.game-card.face-up .card-footprints {
+  color: var(--primary) !important;
+  z-index: 2;
+}
+
+.game-card:hover:not(.disabled) {
+  transform: translateY(-6px) scale(1.02);
+  box-shadow: 0 12px 20px rgba(0, 0, 0, 0.18), 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-color: var(--primary);
+}
+
+.game-card:hover:not(.disabled)::before {
+  border-color: var(--primary);
+}
+
+.game-card.selected {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary), 0 12px 20px rgba(0, 0, 0, 0.18);
+  transform: translateY(-6px);
+}
+
+.game-card.selected::before {
+  border-color: var(--primary);
+}
+
+.game-card.disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.card-num {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  text-shadow: none;
+}
+
+.card-footprints {
+  display: flex;
+  gap: 1px;
+  font-size: 0.65rem;
+  color: var(--primary);
+}
+
+/* Modern clean pawn/position tags */
+.board-pawn {
+  padding: 2px 8px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--text-white);
+  border-radius: 12px;
+  position: absolute;
+  top: -15px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  white-space: nowrap;
+  box-shadow: var(--shadow-sm);
+  pointer-events: none;
+}
+
+.board-pawn::before {
+  display: none !important; /* Hide old meeple head */
+}
+
+.board-pawn.fugitive {
+  background: var(--text-primary);
+  color: var(--bg-card);
+  border: 1px solid var(--border-color);
+}
+
+.board-pawn.marshal {
+  background: var(--primary);
+  color: var(--text-white);
+  border: 1px solid var(--primary);
+}
+
+/* Dynamic CSS string insertion for label names */
+.board-pawn.fugitive::after {
+  content: '👤 도망자' !important;
+  display: inline-block !important;
+}
+
+.board-pawn.marshal::after {
+  content: '👮 수사관' !important;
+  display: inline-block !important;
+}
+
+/* Peg Board -> Clean Progress Bar */
+.peg-board {
+  background: var(--bg-page);
+  border-radius: var(--border-radius-sm);
+  padding: 10px 14px;
+  box-shadow: none;
+  border: 1px solid var(--border-color);
+}
+
+.peg-track {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 4px;
+  margin-top: 6px;
+}
+
+.peg-hole {
+  flex: 1;
+  height: 6px;
+  background: var(--border-color);
+  border-radius: 3px;
+  box-shadow: none;
+  position: relative;
+}
+
+.peg-hole.filled {
+  background: var(--primary);
+}
+
+.wooden-peg {
+  display: none !important; /* Hide vintage peg meeple */
+}
+
+/* Lined Spiral Notebook -> Clean Chat/Log Feed */
+.notepad-log {
+  background-color: var(--bg-card);
+  background-image: none;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-md);
+  box-shadow: var(--shadow-sm);
+  padding: 1.2rem 1.5rem;
+  min-height: 250px;
+}
+
+.notepad-log::before {
+  display: none; /* Remove spiral binder graphics */
+}
+
+.log-panel {
+  max-height: 250px;
+  overflow-y: auto;
+  font-size: 0.88rem;
+  line-height: 1.8;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 0;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-color) transparent;
+}
+
+.log-panel::-webkit-scrollbar {
+  width: 4px;
+}
+
+.log-panel::-webkit-scrollbar-thumb {
+  background-color: var(--border-color);
+  border-radius: 4px;
+}
+
+.log-entry {
+  padding: 6px 12px;
+  border-radius: 8px;
+  background: var(--bg-page);
+  color: var(--text-primary);
+  border-left: none;
+  font-family: var(--font-sans);
+}
+
+.log-entry.FUGITIVE {
+  background: var(--danger-bg);
+  color: var(--danger);
+  font-weight: 600;
+}
+
+.log-entry.MARSHAL {
+  background: var(--primary-bg);
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.log-entry-info {
+  background: var(--bg-page);
+  color: var(--text-secondary);
+}
+
+/* Detective Notepad Checklist */
+.detective-notepad {
+  background-color: var(--bg-card);
+  background-image: none;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-md);
+  box-shadow: var(--shadow-sm);
+  padding: 1.2rem;
+}
+
+.detective-notepad::before {
+  display: none; /* Hide binder graphic */
+}
+
+.notepad-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(36px, 1fr));
+  gap: 6px;
+  margin-top: 0.8rem;
+}
+
+.notepad-cell {
+  aspect-ratio: 1;
+  border-radius: 50%; /* Circle nodes */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  user-select: none;
+  background: var(--bg-page);
+  border: 1px solid transparent;
+  color: var(--text-secondary);
+  transition: all 0.15s ease;
+}
+
+.notepad-cell:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--border-color);
+}
+
+.notepad-cell.strikethrough {
+  background: var(--bg-page) !important;
+  color: var(--text-tertiary) !important;
+  opacity: 0.35;
+  text-decoration: line-through;
+}
+
+.notepad-cell.strikethrough::after,
+.notepad-cell.strikethrough::before {
+  display: none; /* Hide custom pencil lines */
+}
+
+.notepad-cell.suspect {
+  border-color: var(--danger) !important;
+  background: var(--danger-bg) !important;
+  color: var(--danger) !important;
+}
+
+.notepad-cell.suspect::after {
+  display: none; /* Hide custom circle */
+}
+
+.notepad-cell.clue {
+  background: var(--warning-bg) !important;
+  border: 1px solid var(--warning) !important;
+  color: var(--warning) !important;
+}
+
+.notepad-cell.clue::after {
+  display: none; /* Hide paperclip */
+}
+
+.notepad-cell.revealed {
+  background: var(--primary) !important;
+  border: 1px solid var(--primary) !important;
+  color: var(--text-white) !important;
+  font-weight: 700;
+  transform: none;
+  box-shadow: var(--shadow-sm);
+}
+
+.notepad-cell.private-hideout {
+  background: var(--primary-bg) !important;
+  border: 1.5px dashed var(--primary) !important;
+  color: var(--primary) !important;
+  font-weight: 700;
+  transform: none;
+  box-shadow: var(--shadow-sm);
+}
+
+.notepad-cell.hand {
+  background: var(--success) !important;
+  border: 1px solid var(--success) !important;
+  color: var(--text-white) !important;
+  font-weight: 700;
+  transform: none;
+  box-shadow: var(--shadow-sm);
+}
+
+.notepad-cell.sprint {
+  background: var(--warning) !important;
+  border: 1px solid var(--warning) !important;
+  color: var(--text-white) !important;
+  font-weight: 700;
+  transform: none;
+  box-shadow: var(--shadow-sm);
+}
+
+
+/* Supply Decks Stack Styling */
+.physical-deck {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-sm);
+  width: 110px;
+  height: 150px;
+  box-shadow: 
+    1px 1px 0 var(--border-color),
+    2px 2px 0 var(--bg-card),
+    3px 3px 0 var(--border-color),
+    4px 4px 0 var(--bg-card),
+    5px 5px 12px rgba(0, 0, 0, 0.15);
+  position: relative;
+  transition: all 0.2s cubic-bezier(.25,.8,.25,1);
+}
+
+.physical-deck.empty {
+  opacity: 0.3;
+  background: var(--bg-page);
+  box-shadow: none !important;
+  border-style: dashed;
+  cursor: not-allowed;
+}
+
+.physical-deck.can-draw {
+  border-color: var(--primary);
+  animation: pulse-draw-deck 1.6s infinite ease-in-out;
+}
+
+/* 카드 드로우 안내 배너 */
+.draw-instructions-banner {
+  text-align: center;
+  margin-top: 1.5rem;
+  padding: 0.8rem 1.5rem;
+  background: var(--primary-bg);
+  border-radius: var(--border-radius-md);
+}
+
+/* 카드 드로우 권장 뱃지 (마우스 호버 시에만 표시됨) */
+.draw-pulsing-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: var(--primary);
+  color: var(--text-white);
+  font-size: 0.68rem;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: 99px;
+  animation: bounce-draw-badge 1.2s infinite ease-in-out;
+  box-shadow: 0 4px 10px rgba(49, 130, 246, 0.4);
+  z-index: 10;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.physical-deck.can-draw:hover .draw-pulsing-badge {
+  opacity: 1;
+  visibility: visible;
+}
+
+@keyframes bounce-draw-badge {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+@keyframes pulse-draw-deck {
+  0% {
+    box-shadow: 
+      1px 1px 0 var(--primary),
+      2px 2px 0 var(--bg-card),
+      3px 3px 0 var(--primary),
+      4px 4px 0 var(--bg-card),
+      0 0 8px rgba(49, 130, 246, 0.3);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 
+      1px 1px 0 var(--primary),
+      2px 2px 0 var(--bg-card),
+      3px 3px 0 var(--primary),
+      4px 4px 0 var(--bg-card),
+      0 0 20px rgba(49, 130, 246, 0.65);
+    transform: scale(1.03) translateY(-2px);
+    border-color: var(--primary-hover);
+  }
+  100% {
+    box-shadow: 
+      1px 1px 0 var(--primary),
+      2px 2px 0 var(--bg-card),
+      3px 3px 0 var(--primary),
+      4px 4px 0 var(--bg-card),
+      0 0 8px rgba(49, 130, 246, 0.3);
+    transform: scale(1);
+  }
+}
+
+@keyframes pulse-draw-banner {
+  0% {
+    box-shadow: 0 0 4px rgba(49, 130, 246, 0.15);
+    border-color: rgba(49, 130, 246, 0.35);
+  }
+  100% {
+    box-shadow: 0 0 15px rgba(49, 130, 246, 0.45);
+    border-color: var(--primary);
+  }
+}
+
+.physical-deck:hover:not(.empty) {
+  transform: translate(-3px, -7px);
+  border-color: var(--primary);
+  box-shadow: 
+    1px 1px 0 var(--primary),
+    3px 3px 0 var(--bg-card),
+    5px 5px 0 var(--primary),
+    7px 7px 0 var(--bg-card),
+    9px 9px 16px rgba(0, 0, 0, 0.2);
+}
+
+.deck-count-badge {
+  background: var(--primary-bg);
+  color: var(--primary);
+  border: none;
+  border-radius: 4px;
+  padding: 3px 8px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.status-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-md);
+  padding: 0.8rem 1.5rem;
+  font-size: 0.92rem;
+  box-shadow: var(--shadow-sm);
+  color: var(--text-primary);
+}
+
+.turn-indicator {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.4rem 1rem;
+  border-radius: var(--border-radius-sm);
+  border: 1px solid var(--border-color);
+}
+
+.turn-indicator.active {
+  background: var(--primary-bg);
+  border-color: var(--primary);
+  color: var(--primary);
+  animation: pulseActiveTurn 1.5s infinite alternate;
+}
+
+.turn-indicator.inactive {
+  background: var(--bg-page);
+  border-color: var(--border-color);
+  color: var(--text-secondary);
+}
+
+@keyframes pulseActiveTurn {
+  from { box-shadow: 0 0 2px rgba(49, 130, 246, 0.2); }
+  to { box-shadow: 0 0 8px rgba(49, 130, 246, 0.4); }
+}
+
+/* References */
+.rules-reference-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-md);
+  box-shadow: var(--shadow-sm);
+  padding: 1.2rem;
+}
+
+.rules-reference-card h3 {
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 0.5rem;
+}
+
+/* Modals & Overlays */
+.overlay-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(15, 23, 42, 0.35); /* 옅은 투명도로 변경하여 뒤쪽 보드게임판이 훤히 보이도록 함 */
+  backdrop-filter: blur(2px); /* 부드러운 소프트 블러 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+  animation: fadeIn 0.25s ease-out;
+}
+
+.overlay-title.FUGITIVE {
+  color: var(--danger);
+  text-shadow: none;
+}
+
+.overlay-title.MARSHAL {
+  color: var(--primary);
+  text-shadow: none;
+}
+
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(6px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.modal-content {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-lg);
+  border-radius: var(--border-radius-md);
+  padding: 2.2rem;
+  z-index: 1001;
+  animation: scaleUp 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scaleUp {
+  from { transform: scale(0.9); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+/* Draft Card Highlight & Placement Effect */
+.draft-card {
+  border: 2px dashed var(--border-color) !important;
+  background: transparent;
+  color: var(--text-tertiary);
+  opacity: 0.65;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: default;
+}
+
+/* Passive state: pulsing to show where you CAN place a card */
+.draft-card:not(.active) {
+  animation: pulseDraftTarget 2s infinite ease-in-out;
+}
+
+@keyframes pulseDraftTarget {
+  0% {
+    border-color: var(--border-color);
+    box-shadow: none;
+    transform: scale(1);
+  }
+  50% {
+    border-color: var(--primary);
+    box-shadow: 0 0 12px rgba(49, 130, 246, 0.15);
+    transform: scale(1.02);
+  }
+  100% {
+    border-color: var(--border-color);
+    box-shadow: none;
+    transform: scale(1);
+  }
+}
+
+/* Active state: when an hand card is selected for this slot */
+.draft-card.active {
+  border-style: solid !important;
+  opacity: 1;
+  transform: translateY(-6px);
+}
+
+/* Valid placement state: glowing green/blue */
+.draft-card.active.valid {
+  border-color: var(--primary) !important;
+  background: var(--primary-bg) !important;
+  color: var(--primary) !important;
+  box-shadow: 
+    0 0 0 3px var(--bg-page),
+    0 0 0 5px var(--primary),
+    0 12px 24px rgba(49, 130, 246, 0.3);
+  animation: pulseValidPlacement 1s infinite alternate;
+}
+
+@keyframes pulseValidPlacement {
+  from {
+    box-shadow: 
+      0 0 0 3px var(--bg-page),
+      0 0 0 5px var(--primary),
+      0 8px 16px rgba(49, 130, 246, 0.2);
+  }
+  to {
+    box-shadow: 
+      0 0 0 3px var(--bg-page),
+      0 0 0 6px var(--primary),
+      0 16px 32px rgba(49, 130, 246, 0.45);
+  }
+}
+
+/* Invalid placement state: glowing red/alert */
+.draft-card.active.invalid {
+  border-color: var(--danger) !important;
+  background: var(--danger-bg) !important;
+  color: var(--danger) !important;
+  box-shadow: 
+    0 0 0 3px var(--bg-page),
+    0 0 0 5px var(--danger),
+    0 8px 16px rgba(240, 68, 56, 0.25);
+  animation: shakeInvalidPlacement 0.25s ease-in-out infinite alternate;
+}
+
+@keyframes shakeInvalidPlacement {
+  from {
+    transform: translateY(-6px) translateX(-2px);
+  }
+  to {
+    transform: translateY(-6px) translateX(2px);
+  }
+}
+
+/* Private Card State for Fugitive view */
+.game-card.private {
+  border-style: dashed !important;
+  opacity: 0.9;
+}
+
+/* Enforce uniform sprint dots */
+.sprint-dot {
+  width: 8px !important;
+  height: 8px !important;
+  background-color: var(--primary) !important;
+  border-radius: 50% !important;
+  display: inline-block !important;
+  box-shadow: 0 1px 3px rgba(49, 130, 246, 0.3) !important;
+}

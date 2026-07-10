@@ -1,0 +1,581 @@
+/* Toss UI Style Component overrides */
+
+/* Clean rounded Input Fields */
+.cyber-input {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  padding: 0.8rem 1rem;
+  border-radius: var(--border-radius-sm);
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+  width: 100%;
+  transition: all 0.2s ease;
+  outline: none;
+  box-shadow: none;
+}
+
+.cyber-input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-bg);
+}
+
+.cyber-input:disabled {
+  opacity: 0.5;
+  background: var(--bg-page);
+  cursor: not-allowed;
+}
+
+.cyber-label {
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
+  text-transform: none;
+  letter-spacing: 0;
+  color: var(--text-secondary);
+  margin-bottom: 0.5rem;
+  display: block;
+  font-weight: 600;
+}
+
+/* Toast Notification - Toss Style Flat Banner */
+.toast-container {
+  position: fixed;
+  top: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1001;
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  max-width: min(92vw, 640px);
+  width: min(92vw, 640px);
+  pointer-events: none;
+}
+
+.toast {
+  background: rgba(255, 255, 255, 0.98);
+  border: 1px solid var(--border-color);
+  border-left: 4px solid var(--primary);
+  color: var(--text-primary);
+  padding: 1.35rem 1.5rem;
+  border-radius: 24px;
+  box-shadow: 0 22px 60px rgba(0, 0, 0, 0.22);
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  line-height: 1.5;
+  animation: slideIn 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  position: relative;
+  width: 100%;
+  pointer-events: auto;
+}
+
+.toast-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.55rem;
+}
+
+.toast-icon {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  font-weight: 800;
+  background: var(--primary-bg);
+  color: var(--primary);
+  flex-shrink: 0;
+}
+
+.toast-title {
+  font-size: 1.1rem;
+  line-height: 1.2;
+}
+
+.toast-message {
+  font-size: 1rem;
+  line-height: 1.45;
+  color: var(--text-primary);
+}
+
+.toast-success {
+  border-left-color: var(--success);
+}
+
+.toast-success .toast-icon {
+  background: var(--success-bg);
+  color: var(--success);
+}
+
+.toast-error {
+  border-left-color: var(--danger);
+}
+
+.toast-error .toast-icon {
+  background: var(--danger-bg);
+  color: var(--danger);
+}
+
+.toast-warning {
+  border-left-color: var(--warning);
+}
+
+.toast-warning .toast-icon {
+  background: var(--warning-bg);
+  color: var(--warning);
+}
+
+.toast-info {
+  border-left-color: var(--primary);
+}
+
+.toast-info .toast-icon {
+  background: var(--primary-bg);
+  color: var(--primary);
+}
+
+/* Remove vintage wax seal effect */
+.toast::after {
+  display: none !important;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(18px) scale(0.96);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
+@media (max-width: 640px) {
+  .toast-container {
+    width: min(92vw, 640px);
+  }
+
+  .toast {
+    padding: 1.1rem 1.2rem;
+    border-radius: 20px;
+  }
+
+  .toast-title {
+    font-size: 1rem;
+  }
+
+  .toast-message {
+    font-size: 0.94rem;
+  }
+}
+
+/* Connection Status Badge - Minimal status chip */
+.connection-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-family: var(--font-sans);
+  font-weight: 600;
+  letter-spacing: 0;
+  background: var(--bg-page);
+  border: 1px solid var(--border-color);
+  box-shadow: none;
+  color: var(--text-secondary);
+}
+
+.connection-badge .dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.connection-badge.connected .dot {
+  background-color: var(--success);
+}
+
+.connection-badge.connecting .dot {
+  background-color: var(--warning);
+  animation: pulse 1s infinite alternate;
+}
+
+.connection-badge.disconnected .dot {
+  background-color: var(--danger);
+}
+
+@keyframes pulse {
+  from { opacity: 0.4; }
+  to { opacity: 1; }
+}
+
+/* Match History Table - Sleek dashboard table */
+.cyber-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+  font-size: 0.88rem;
+  text-align: left;
+}
+
+.cyber-table th {
+  font-family: var(--font-sans);
+  color: var(--text-tertiary);
+  font-weight: 600;
+  text-transform: none;
+  letter-spacing: 0;
+  padding: 0.8rem 1rem;
+  border-bottom: 1px solid var(--border-color);
+  font-size: 0.82rem;
+  text-align: center;
+}
+
+.cyber-table td {
+  padding: 1rem;
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  text-align: center;
+}
+
+.cyber-table tr:hover td {
+  background: var(--bg-page);
+}
+
+/* Stamp Copy Badge */
+.copied-tip {
+  font-size: 0.7rem;
+  font-family: var(--font-sans);
+  color: var(--primary);
+  font-weight: bold;
+  margin-left: 0.5rem;
+  border: 1px solid var(--primary);
+  padding: 1px 6px;
+  border-radius: 4px;
+  display: inline-block;
+  background: var(--primary-bg);
+}
+
+/* Scroll Container for Board Path */
+.board-scroll-container {
+  padding: 1.5rem 0.5rem;
+  overflow-x: auto;
+  border-radius: var(--border-radius-md);
+  background: var(--bg-page);
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-color) transparent;
+}
+
+/* Sprint indicators under hideouts */
+.sprint-dot-container {
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+  margin-top: 0.5rem;
+  flex-wrap: wrap;
+  max-width: 80px;
+}
+
+.sprint-dot {
+  width: 6px;
+  height: 6px;
+  background-color: var(--primary);
+  border-radius: 50%;
+  box-shadow: none;
+  border: none;
+}
+
+.sprint-number-badge {
+  font-size: 0.65rem;
+  background: var(--primary-bg);
+  border: none;
+  color: var(--primary);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: var(--font-sans);
+  font-weight: 600;
+}
+
+/* Card Selection Indicators */
+.game-card.sprint-selected {
+  border-color: var(--warning) !important;
+  box-shadow: 0 0 0 2px var(--warning), var(--shadow-md) !important;
+  transform: translateY(-6px);
+}
+
+.game-card.target-selected {
+  border-color: var(--primary) !important;
+  box-shadow: 0 0 0 2px var(--primary), var(--shadow-md) !important;
+  transform: translateY(-6px);
+}
+
+/* Card Action Popup Drawer */
+.card-action-menu {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--bg-card);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 6px;
+  transform: translateY(100%);
+  transition: transform 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+  border-top: 1px solid var(--border-color);
+  z-index: 10;
+  box-shadow: 0 -4px 12px rgba(0,0,0,0.05);
+}
+
+.game-card:hover .card-action-menu {
+  transform: translateY(0);
+}
+
+.card-action-btn {
+  font-size: 0.7rem;
+  padding: 6px 0;
+  text-align: center;
+  background: var(--bg-page);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  color: var(--text-primary);
+  cursor: pointer;
+  font-weight: 600;
+  text-transform: none;
+  font-family: var(--font-sans);
+  transition: all 0.15s ease;
+}
+
+.card-action-btn:hover {
+  background: var(--primary);
+  color: var(--text-white);
+  border-color: var(--primary);
+}
+
+.card-action-btn.accent:hover {
+  background: var(--success);
+  color: var(--text-white);
+  border-color: var(--success);
+}
+
+.card-badge {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  font-size: 0.65rem;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 600;
+  font-family: var(--font-sans);
+  border: none;
+}
+
+.card-badge.target {
+  background-color: var(--primary);
+  color: var(--text-white);
+}
+
+.card-badge.sprint {
+  background-color: var(--warning-bg);
+  color: var(--warning);
+}
+
+/* Form layouts */
+.form-group {
+  margin-bottom: 1.2rem;
+}
+
+/* Server Configuration Trigger Gear Icon */
+.server-config-trigger {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  font-weight: 600;
+  cursor: pointer;
+  transition: color 0.2s;
+  font-family: var(--font-sans);
+  text-transform: uppercase;
+}
+
+.server-config-trigger:hover {
+  color: var(--primary);
+}
+
+.w-full {
+  width: 100%;
+}
+
+/* Card Draw Effect Overlay */
+.draw-effect-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  animation: fadeIn 0.25s ease forwards;
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.draw-effect-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: scaleUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+.draw-effect-title {
+  font-family: var(--font-sans);
+  font-weight: 800;
+  font-size: 1.4rem;
+  letter-spacing: -0.02em;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  text-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+  color: var(--text-primary);
+  animation: slideDownText 0.4s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both;
+}
+
+.draw-effect-title.fugitive {
+  color: var(--danger);
+  text-shadow: 0 0 15px rgba(239, 68, 68, 0.4);
+}
+
+.draw-effect-title.marshal {
+  color: var(--primary);
+  text-shadow: 0 0 15px rgba(49, 130, 246, 0.4);
+}
+
+.draw-effect-card {
+  position: relative;
+  width: 160px;
+  height: 240px;
+  background-color: var(--bg-card);
+  border: 3px solid var(--border-color);
+  border-radius: var(--border-radius-md);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6), 0 0 30px rgba(49, 130, 246, 0.15);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 1rem;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transform-style: preserve-3d;
+  animation: cardReveal 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.15s both;
+}
+
+.draw-effect-card.fugitive {
+  border-color: var(--danger);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6), 0 0 30px rgba(239, 68, 68, 0.3);
+}
+
+.draw-effect-card.marshal {
+  border-color: var(--primary);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6), 0 0 30px rgba(49, 130, 246, 0.35);
+}
+
+.draw-effect-number {
+  font-size: 3.5rem;
+  font-weight: 900;
+  color: var(--text-white);
+  line-height: 1;
+  text-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.draw-effect-card.fugitive .draw-effect-number {
+  color: var(--danger);
+}
+
+.draw-effect-card.marshal .draw-effect-number {
+  color: var(--primary);
+}
+
+.draw-effect-footprints {
+  font-size: 1.1rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0.3rem 0.7rem;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 99px;
+  color: var(--text-secondary);
+}
+
+.draw-effect-card.fugitive .draw-effect-footprints {
+  background: var(--danger-bg);
+  color: var(--danger);
+}
+
+.draw-effect-card.marshal .draw-effect-footprints {
+  background: var(--primary-bg);
+  color: var(--primary);
+}
+
+.draw-effect-badge {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 800;
+  padding: 2px 8px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-tertiary);
+}
+
+.draw-effect-card.fugitive .draw-effect-badge {
+  background: var(--danger);
+  color: var(--text-white);
+}
+
+.draw-effect-card.marshal .draw-effect-badge {
+  background: var(--primary);
+  color: var(--text-white);
+}
+
+.draw-effect-hint {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-top: 1.5rem;
+  opacity: 0.8;
+  animation: pulseOpacity 1.5s infinite ease-in-out;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scaleUp {
+  from { transform: scale(0.85); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+@keyframes slideDownText {
+  from { transform: translateY(-20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes cardReveal {
+  0% { transform: translateY(30px) rotateY(-30deg) scale(0.9); opacity: 0; }
+  100% { transform: translateY(0) rotateY(0) scale(1); opacity: 1; }
+}
+
+@keyframes pulseOpacity {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.9; }
+}
+
