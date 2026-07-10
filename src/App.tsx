@@ -3248,7 +3248,7 @@ function App() {
                       }
 
                       const hasAutoState = isRevealedHideout || isPrivateHideout || isHandCard || isSprintCard;
-                      const canClick = playerView.viewer !== 'FUGITIVE' && !hasAutoState;
+                      const canClick = !hasAutoState;
 
                       return (
                         <div 
@@ -3262,8 +3262,12 @@ function App() {
                               setNotepadNotes(prev => {
                                 const current = prev[i] || 'none';
                                 let next: 'none' | 'strikethrough' | 'suspect' = 'none';
-                                if (current === 'none') next = 'strikethrough';
-                                else if (current === 'strikethrough') next = 'suspect';
+                                if (playerView.viewer === 'FUGITIVE') {
+                                  next = current === 'none' ? 'strikethrough' : 'none';
+                                } else {
+                                  if (current === 'none') next = 'strikethrough';
+                                  else if (current === 'strikethrough') next = 'suspect';
+                                }
                                 return { ...prev, [i]: next };
                               });
                             }
@@ -3299,17 +3303,19 @@ function App() {
                       </div>
                     </div>
                     
-                    {/* 두 번째 줄: 수동 마킹 상태 (수사관 전용) */}
-                    {playerView.viewer === 'MARSHAL' && (
+                    {/* 두 번째 줄: 수동 마킹 상태 */}
+                    {(playerView.viewer === 'MARSHAL' || playerView.viewer === 'FUGITIVE') && (
                       <div style={{ display: 'flex', gap: '0.8rem', flexWrap: 'wrap', justifyContent: 'center' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                           <span style={{ display: 'inline-block', width: '10px', height: '10px', borderRadius: '50%', border: '1px solid var(--border-color)', backgroundColor: 'var(--bg-page)', textDecoration: 'line-through', fontSize: '8px', lineHeight: '10px', textAlign: 'center', color: 'var(--text-tertiary)' }} />
                           <span>제외 (클릭)</span>
                         </div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                          <span style={{ display: 'inline-block', width: '10px', height: '10px', borderRadius: '50%', border: '1px solid var(--danger)', backgroundColor: 'var(--danger-bg)' }} />
-                          <span>용의 (클릭)</span>
-                        </div>
+                        {playerView.viewer === 'MARSHAL' && (
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                            <span style={{ display: 'inline-block', width: '10px', height: '10px', borderRadius: '50%', border: '1px solid var(--danger)', backgroundColor: 'var(--danger-bg)' }} />
+                            <span>용의 (클릭)</span>
+                          </div>
+                        )}
                       </div>
                     )}
                   </div>
