@@ -226,6 +226,30 @@ interface SetupDealLocal {
   deck2Drawn: number[];
 }
 
+// 서버 호스트를 기반으로 http 및 ws 프로토콜과 깔끔한 호스트 주소를 얻는 헬퍼
+function getProtocols(host: string) {
+  let cleanHost = host;
+  let httpProto = 'http://';
+  let wsProto = 'ws://';
+
+  if (host.startsWith('http://') || host.startsWith('https://')) {
+    try {
+      const url = new URL(host);
+      cleanHost = url.host;
+      httpProto = url.protocol + '//';
+      wsProto = url.protocol === 'https:' ? 'wss://' : 'ws://';
+    } catch (e) {
+      console.error(e);
+    }
+  } else {
+    // 호스트에 프로토콜이 명시되지 않은 경우, localhost/127.0.0.1이 아니거나 현재 페이지가 https이면 https/wss 적용
+    const useSecure = window.location.protocol === 'https:' || (!host.includes('localhost') && !host.includes('127.0.0.1'));
+    httpProto = useSecure ? 'https://' : 'http://';
+    wsProto = useSecure ? 'wss://' : 'ws://';
+  }
+  return { cleanHost, httpProto, wsProto };
+}
+
 function App() {
   // 연결 및 식별 정보 상태
   const [playerId, setPlayerId] = useState<string>(() => {
@@ -235,8 +259,10 @@ function App() {
     return localStorage.getItem('fugitive_nickname') || '';
   });
   const [serverHost] = useState<string>(() => {
-    return localStorage.getItem('fugitive_serverHost') || 'localhost:8080';
+    return import.meta.env.VITE_SERVER_HOST || localStorage.getItem('fugitive_serverHost') || 'localhost:8080';
   });
+  const { cleanHost, httpProto, wsProto } = getProtocols(serverHost);
+
   const [connectionStatus, setConnectionStatus] = useState<'CONNECTED' | 'DISCONNECTED' | 'CONNECTING'>('DISCONNECTED');
   const [screen, setScreen] = useState<'HOME' | 'LOBBY' | 'WAITING' | 'GAME'>('HOME');
   const [theme] = useState<'dark' | 'light'>('light');
@@ -376,7 +402,7 @@ function App() {
     const refreshToken = localStorage.getItem("refreshToken");
     if (refreshToken) {
       try {
-        await fetch(`http://${serverHost}/auth/logout`, {
+        await fetch(`${httpProto}${cleanHost}/auth/logout`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ refreshToken })
@@ -419,7 +445,7 @@ function App() {
       const refreshToken = localStorage.getItem("refreshToken");
       if (refreshToken) {
         try {
-          const refreshRes = await fetch(`http://${serverHost}/auth/refresh`, {
+          const refreshRes = await fetch(`${httpProto}${cleanHost}/auth/refresh`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ refreshToken })
@@ -924,7 +950,7 @@ function App() {
     }
 
     const token = localStorage.getItem("accessToken") || "";
-    const wsUrl = `ws://${serverHost}/ws`;
+    const wsUrl = `${wsProto}${cleanHost}/ws`;
     const client = new Client({
       brokerURL: wsUrl,
       connectHeaders: { 
@@ -1119,7 +1145,7 @@ function App() {
 
     // 대기실 입장 즉시 백엔드로부터 최신 방 상태(RoomState) 동기화 (방장/게스트 상태 즉시 렌더링)
     try {
-      const res = await authenticatedFetch(`http://${serverHost}/rooms/${rId}`);
+      const res = await authenticatedFetch(`${httpProto}${cleanHost}/rooms/${rId}`);
       if (res.ok) {
         const state: RoomState = await res.json();
         setRoomState(state);
@@ -1151,7 +1177,7 @@ function App() {
   // 재접속 시 데이터 복구 함수
   const reconnectRoom = async (client: Client, rId: string) => {
     try {
-      const roomRes = await authenticatedFetch(`http://${serverHost}/rooms/${rId}`);
+      const roomRes = await authenticatedFetch(`${httpProto}${cleanHost}/rooms/${rId}`);
       if (!roomRes.ok) {
         throw new Error('Room not found');
       }
@@ -1161,7 +1187,7 @@ function App() {
       subscribeToRoomTopic(client, rId);
 
       if (state.status === 'STARTED') {
-        const gameRes = await authenticatedFetch(`http://${serverHost}/rooms/${rId}/game?playerId=${playerId}`);
+        const gameRes = await authenticatedFetch(`${httpProto}${cleanHost}/rooms/${rId}/game?playerId=${playerId}`);
         if (gameRes.ok) {
           const view: PlayerView = await gameRes.json();
           setPlayerView(view);
@@ -1188,7 +1214,7 @@ function App() {
 
   const fetchGameView = async (rId: string) => {
     try {
-      const res = await authenticatedFetch(`http://${serverHost}/rooms/${rId}/game?playerId=${playerId}`);
+      const res = await authenticatedFetch(`${httpProto}${cleanHost}/rooms/${rId}/game?playerId=${playerId}`);
       if (res.ok) {
         const data = await res.json();
         const view: PlayerView = data.view || data.playerView || (data.viewer ? data : null);
@@ -1255,7 +1281,7 @@ function App() {
     }
     // 1. 전적 목록 조회
     try {
-      const res = await authenticatedFetch(`http://${serverHost}/players/${playerId}/results`);
+      const res = await authenticatedFetch(`${httpProto}${cleanHost}/players/${playerId}/results`);
       if (res.ok) {
         const data = await res.json();
         setHistory(data);
@@ -1266,7 +1292,7 @@ function App() {
 
     // 2. 집계 통계 조회
     try {
-      const statsRes = await authenticatedFetch(`http://${serverHost}/players/${playerId}/stats`);
+      const statsRes = await authenticatedFetch(`${httpProto}${cleanHost}/players/${playerId}/stats`);
       if (statsRes.ok) {
         const data = await statsRes.json();
         setStats(data);
@@ -1771,7 +1797,7 @@ function App() {
               }} 
               onClick={() => {
                 playSynthSound('click');
-                window.location.href = `http://${serverHost}/auth/kakao/login?prompt=login`;
+                window.location.href = `${httpProto}${cleanHost}/auth/kakao/login?prompt=login`;
               }}
             >
               <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" style={{ flexShrink: 0 }}>
