@@ -923,14 +923,45 @@ function App() {
       playSynthSound('success');
     }
 
-    // 4. 발각(공개) 감지
+    // 4. 발각(공개) 감지 및 수사관의 추측 결과 알림 (도망자 시점 보완)
+    let newlyRevealedCount = 0;
+    const newlyRevealedDetails: string[] = [];
+
     playerView.board.forEach((hideout, idx) => {
       const prevHideout = prevView.board[idx];
       if (hideout.revealed && prevHideout && !prevHideout.revealed) {
+        newlyRevealedCount++;
+        newlyRevealedDetails.push(`은신처${idx}(${hideout.number}번)`);
         newLogs.push(`🎯 은신처${idx}의 실체가 밝혀졌습니다! (${hideout.number}번 카드)`);
-        playSynthSound('success');
+        // 도망자 시점에서는 경고음을, 수사관 시점에서는 성공음 재생
+        if (playerView.viewer === 'FUGITIVE') {
+          playSynthSound('error');
+        } else {
+          playSynthSound('success');
+        }
       }
     });
+
+    // 도망자(Fugitive) 시점에서 수사관의 수사 성공/실패 토스트 및 로그 보완
+    if (playerView.viewer === 'FUGITIVE') {
+      // 일반 턴에서 수사관의 차례가 끝나고 도망자의 차례가 시작되었을 때
+      if (prevView.currentTurn === 'MARSHAL' && playerView.currentTurn === 'FUGITIVE') {
+        if (newlyRevealedCount > 0) {
+          addToast({ kind: 'warning', title: '수사 성공당함', message: `🚨 수사관이 내 은신처를 밝혀냈습니다: ${newlyRevealedDetails.join(', ')}` });
+        } else {
+          addToast({ kind: 'success', title: '수사 회피 성공', message: '👮 수사관이 은신처 추색에 실패했습니다!' });
+          newLogs.push(`❌ 수사관이 은신처 추색에 실패했습니다.`);
+          playSynthSound('success');
+        }
+      }
+
+      // 맨헌트(최후의 추격) 진행 중 수사관의 추측 성공 감지
+      if (prevView.phase === 'MANHUNT' && playerView.phase === 'MANHUNT') {
+        if (newlyRevealedCount > 0) {
+          addToast({ kind: 'warning', title: '최후의 추격 성공당함', message: `🚨 수사관이 내 은신처를 찾아냈습니다: ${newlyRevealedDetails.join(', ')}` });
+        }
+      }
+    }
 
     // 5. 게임 단계 전환 감지
     if (prevView.phase !== playerView.phase) {
