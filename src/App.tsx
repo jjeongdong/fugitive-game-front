@@ -280,6 +280,8 @@ function App() {
   const [stats, setStats] = useState<PlayerStats | null>(null);
   const [toasts, setToasts] = useState<{ id: string; kind: 'default' | 'success' | 'error' | 'info' | 'warning'; title?: string; message: string }[]>([]);
   const [copied, setCopied] = useState<boolean>(false);
+  const [showRoleIntro, setShowRoleIntro] = useState<boolean>(false);
+  const [introCountdown, setIntroCountdown] = useState<number>(5);
 
   // 카드 드로우 연출 상태
   const [drawnCardEffect, setDrawnCardEffect] = useState<{
@@ -695,6 +697,19 @@ function App() {
       addToast({ kind: 'success', title: '초기 드로우 완료', message: '🎉 초기 카드 구성 완료!' });
     }
   }, [setupDealLocal]);
+
+  // 역할 인트로 카운트다운 타이머
+  useEffect(() => {
+    if (!showRoleIntro) return;
+    if (introCountdown <= 0) {
+      setShowRoleIntro(false);
+      return;
+    }
+    const timer = setTimeout(() => {
+      setIntroCountdown(prev => prev - 1);
+    }, 1000);
+    return () => clearTimeout(timer);
+  }, [showRoleIntro, introCountdown]);
   // 실시간 게임 타이머 제어 (게임 진행 중일 때만 동작, 종료 시 정지)
   useEffect(() => {
     if (screen === 'GAME' && playerView && playerView.phase !== 'ENDED') {
@@ -1007,6 +1022,8 @@ function App() {
 
             setPlayerView(view);
             setScreen('GAME');
+            setShowRoleIntro(true);
+            setIntroCountdown(5);
             setGameSeconds(0);
             localStorage.setItem('fugitive_gameSeconds', '0');
             localStorage.setItem('fugitive_gameStartTime', Date.now().toString());
@@ -2167,6 +2184,81 @@ function App() {
         {/* 4. 활성화된 작전 게임판 화면 */}
         {screen === 'GAME' && playerView && (
           <div>
+            {/* 역할 소개 인트로 오버레이 */}
+            {showRoleIntro && (
+              <div className="overlay-screen" style={{ zIndex: 3000, background: 'rgba(7, 10, 19, 0.98)', backdropFilter: 'blur(20px)' }}>
+                <div className="glass-panel" style={{
+                  padding: '3rem 2.5rem',
+                  border: '1px solid var(--border-color)',
+                  background: 'var(--bg-card)',
+                  maxWidth: '520px',
+                  width: '90%',
+                  borderRadius: '24px',
+                  textAlign: 'center',
+                  boxShadow: '0 20px 50px rgba(0, 0, 0, 0.6)',
+                  animation: 'scaleUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)'
+                }}>
+                  {playerView.viewer === 'FUGITIVE' ? (
+                    <>
+                      <span style={{ fontSize: '4.5rem', display: 'block', marginBottom: '1rem', animation: 'pulse 2s infinite' }}>👤</span>
+                      <h2 style={{ fontSize: '2.2rem', color: 'var(--success)', border: 'none', padding: 0, margin: '0 0 1rem 0', fontWeight: '800', letterSpacing: '-0.02em' }}>
+                        도망자 (FUGITIVE)
+                      </h2>
+                      <p style={{ fontSize: '0.95rem', color: 'var(--text-secondary)', lineHeight: '1.6', marginBottom: '2rem' }}>
+                        당신의 목표는 수사관의 추적을 따돌리고 최종 목적지인 **42번 은신처**를 안전하게 설치하여 탈출하는 것입니다.
+                      </p>
+                      <div style={{ background: 'var(--bg-page)', borderRadius: '16px', padding: '1.2rem', border: '1px solid var(--border-color)', textAlign: 'left', display: 'flex', flexDirection: 'column', gap: '0.8rem', marginBottom: '2.5rem' }}>
+                        <h4 style={{ fontSize: '0.9rem', margin: 0, color: 'var(--text-primary)', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.6rem' }}>
+                          💡 도망자 가이드
+                        </h4>
+                        <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                          <div>• 카드를 내어 순서대로 증가하는 은신처를 설치합니다.</div>
+                          <div>• 직전 은신처와의 번호 차이는 기본 **최대 3**입니다.</div>
+                          <div>• 더 멀리 이동하려면 발자국 카드(도약)를 추가로 같이 내야 합니다.</div>
+                        </div>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <span style={{ fontSize: '4.5rem', display: 'block', marginBottom: '1rem', animation: 'pulse 2s infinite' }}>👮</span>
+                      <h2 style={{ fontSize: '2.2rem', color: 'var(--primary)', border: 'none', padding: 0, margin: '0 0 1rem 0', fontWeight: '800', letterSpacing: '-0.02em' }}>
+                        수사관 (MARSHAL)
+                      </h2>
+                      <p style={{ fontSize: '0.95rem', color: 'var(--text-secondary)', lineHeight: '1.6', marginBottom: '2rem' }}>
+                        당신의 목표는 도망자가 숨겨둔 모든 은신처 번호를 추리하여 도망자를 검거(체포)하는 것입니다.
+                      </p>
+                      <div style={{ background: 'var(--bg-page)', borderRadius: '16px', padding: '1.2rem', border: '1px solid var(--border-color)', textAlign: 'left', display: 'flex', flexDirection: 'column', gap: '0.8rem', marginBottom: '2.5rem' }}>
+                        <h4 style={{ fontSize: '0.9rem', margin: 0, color: 'var(--text-primary)', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.6rem' }}>
+                          💡 수사관 가이드
+                        </h4>
+                        <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                          <div>• 도망자가 설치한 번호를 하나씩 또는 일괄로 추측합니다.</div>
+                          <div>• 일괄 수색 시 하나라도 번호가 다르면 실패 처리됩니다.</div>
+                          <div>• 도망자가 42번 은신처를 설치하기 전에 모든 은신처를 찾아내세요.</div>
+                        </div>
+                      </div>
+                    </>
+                  )}
+                  
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
+                    <button
+                      className="btn btn-primary"
+                      style={{ width: '100%', padding: '0.9rem', fontSize: '1rem', borderRadius: '12px', fontWeight: 'bold' }}
+                      onClick={() => {
+                        playSynthSound('click');
+                        setShowRoleIntro(false);
+                      }}
+                    >
+                      작전 개시
+                    </button>
+                    <span style={{ fontSize: '0.82rem', color: 'var(--text-tertiary)', fontStyle: 'italic' }}>
+                      {introCountdown}초 후 자동으로 게임이 시작됩니다...
+                    </span>
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* 게임 결과 오버레이 (Toss 스타일 모달 오버레이) */}
             {playerView.phase === 'ENDED' && (
               <div className="overlay-screen">
