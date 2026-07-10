@@ -318,6 +318,9 @@ function App() {
   const gameSubscriptionRef = useRef<any>(null);
   const lastReceivedGuessRef = useRef<any>(null);
 
+  const roomIdRef = useRef<string>('');
+  const isRematchingRef = useRef<boolean>(false);
+
   // 실시간 게임 로그 자동 스크롤을 위한 참조
   const logPanelRef = useRef<HTMLDivElement>(null);
 
@@ -635,6 +638,10 @@ function App() {
   useEffect(() => {
     localStorage.setItem('fugitive_playerId', playerId);
   }, [playerId]);
+
+  useEffect(() => {
+    roomIdRef.current = roomId;
+  }, [roomId]);
 
   useEffect(() => {
     localStorage.setItem('fugitive_serverHost', serverHost);
@@ -1063,6 +1070,22 @@ function App() {
           try {
             const data = JSON.parse(msg.body);
             const newRoomId = data.roomId;
+
+            // 만약 재대결 생성 요청인 경우, 상대방에게도 알리고 대기방으로 동시 이동
+            if (isRematchingRef.current) {
+              isRematchingRef.current = false;
+              if (roomIdRef.current) {
+                client.publish({
+                  destination: `/topic/game/${roomIdRef.current}/guesses`,
+                  body: JSON.stringify({
+                    type: 'REMATCH_START',
+                    newRoomId: newRoomId,
+                    guesserId: playerId
+                  })
+                });
+              }
+            }
+
             setRoomId(newRoomId);
             localStorage.setItem('fugitive_roomId', newRoomId);
             subscribeToRoomTopic(client, newRoomId);
@@ -1238,9 +1261,21 @@ function App() {
     // 수사관의 추측 정보(Failed guess numbers 포함)를 실시간 공유하기 위한 토픽 구독
     const gameSub = client.subscribe(`/topic/game/${rId}/guesses`, (msg) => {
       try {
-        const guess = JSON.parse(msg.body);
-        if (guess.guesserId !== playerId) {
-          lastReceivedGuessRef.current = guess;
+        const payload = JSON.parse(msg.body);
+
+        // 재대결 관련 실시간 중계 이벤트 처리
+        if (payload.type === 'REMATCH_REQUESTED') {
+          addToast({ kind: 'info', title: '재대결 신청', message: '🎮 방장이 재대결을 신청했습니다. 새로운 방을 생성 중입니다...' });
+        } else if (payload.type === 'REMATCH_START') {
+          addToast({ kind: 'success', title: '재대결 시작', message: '⚡ 새 대기방으로 이동합니다!' });
+          if (roomSubscriptionRef.current) roomSubscriptionRef.current.unsubscribe();
+          if (gameSubscriptionRef.current) gameSubscriptionRef.current.unsubscribe();
+          handleJoinRoom(payload.newRoomId);
+          return;
+        }
+
+        if (payload.guesserId !== playerId) {
+          lastReceivedGuessRef.current = payload;
         }
       } catch (e) {
         console.error("Failed to parse guess broadcast", e);
@@ -1337,6 +1372,27 @@ function App() {
   const handleCreateRoom = () => {
     if (!stompClientRef.current || connectionStatus !== 'CONNECTED') return;
     playSynthSound('click');
+    stompClientRef.current.publish({
+      destination: '/app/room/create',
+      body: ''
+    });
+  };
+
+  const handleRematchRequest = () => {
+    if (!stompClientRef.current || connectionStatus !== 'CONNECTED' || !roomId) return;
+    playSynthSound('click');
+    isRematchingRef.current = true;
+
+    // 상대방에게 재대결 신청 브로드캐스트
+    stompClientRef.current.publish({
+      destination: `/topic/game/${roomId}/guesses`,
+      body: JSON.stringify({
+        type: 'REMATCH_REQUESTED',
+        guesserId: playerId
+      })
+    });
+
+    // 새 방 만들기 요청
     stompClientRef.current.publish({
       destination: '/app/room/create',
       body: ''
@@ -2419,13 +2475,28 @@ function App() {
                           </div>
                         </div>
 
-                        <button 
-                          className="btn btn-primary" 
-                          style={{ padding: '0.8rem 2.5rem', fontSize: '1rem', borderRadius: '12px', width: '100%', fontWeight: 'bold' }} 
-                          onClick={handleLeaveRoom}
-                        >
-                          대기실로 돌아가기
-                        </button>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem', width: '100%', marginTop: '1.5rem' }}>
+                          {playerId === roomState?.hostId ? (
+                            <button 
+                              className="btn btn-primary" 
+                              style={{ padding: '0.8rem 2.5rem', fontSize: '1.05rem', borderRadius: '12px', width: '100%', fontWeight: 'bold', background: 'var(--success)' }} 
+                              onClick={handleRematchRequest}
+                            >
+                              🔄 재대결 시작 (새 대기실 생성)
+                            </button>
+                          ) : (
+                            <div style={{ padding: '0.82rem', background: 'var(--bg-page)', borderRadius: '12px', border: '1px dashed var(--border-color)', fontSize: '0.88rem', color: 'var(--text-secondary)' }}>
+                              ⌛ 방장이 재대결을 신청하면 자동으로 새 방으로 이동합니다.
+                            </div>
+                          )}
+                          <button 
+                            className="btn btn-secondary" 
+                            style={{ padding: '0.8rem 2.5rem', fontSize: '1rem', borderRadius: '12px', width: '100%', fontWeight: 'bold' }} 
+                            onClick={handleLeaveRoom}
+                          >
+                            🚪 게임 종료하고 방 나가기
+                          </button>
+                        </div>
                       </>
                     );
                   })()}
