@@ -3191,7 +3191,7 @@ function App() {
                                 <button className="btn btn-secondary" style={{ flex: 1, borderRadius: '10px', padding: '0.75rem' }} onClick={() => setIsMultiGuessMode(false)}>
                                   취소
                                 </button>
-                              </div>
+                              </div>\
                             </div>
                           </div>
                         )}
