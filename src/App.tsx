@@ -705,7 +705,7 @@ function App() {
     if (!setupDealLocal) return;
     if (setupDealLocal.deck1Queue.length === 0 && setupDealLocal.deck2Queue.length === 0) {
       setSetupDealLocal(null);
-      addToast({ kind: 'success', title: '초기 드로우 완료', message: '🎉 초기 카드 구성 완료!' });
+      addToast({ kind: 'success', title: '도주 준비 완료', message: '🎉 5장의 카드를 모두 뽑았습니다. 이제 숨을 곳을 찾으세요!' });
     }
   }, [setupDealLocal]);
 
@@ -795,22 +795,22 @@ function App() {
         if (allRevealed) {
           if (pendingGuess.length === 1) {
             const g = pendingGuess[0];
-            addToast({ kind: 'success', title: '수사 성공', message: `은신처${g.position}은 ${g.number}가 맞습니다.` });
+            addToast({ kind: 'success', title: '수사 성공!', message: `🎯 정확합니다! ${g.position}번째 은신처는 [${g.number}번]입니다.` });
             newLogs.push(`🎯 수사 성공! ${g.position}번째 은신처는 [${g.number}번]이 맞습니다.`);
             playSynthSound('success');
           } else {
-            addToast({ kind: 'success', title: '일괄 수색 성공', message: '모든 비공개 은신처가 공개되었습니다.' });
+            addToast({ kind: 'success', title: '일괄 수사 성공!', message: '🎯 완벽한 추리입니다! 지목한 은신처를 모두 찾아냈습니다.' });
             newLogs.push(`🎯 일괄 수사 성공! 지목한 은신처들을 모두 찾아냈습니다.`);
             playSynthSound('success');
           }
         } else {
           if (pendingGuess.length === 1) {
             const g = pendingGuess[0];
-            addToast({ kind: 'error', title: '수사 실패', message: `은신처${g.position}은 ${g.number}가 아닙니다.` });
+            addToast({ kind: 'error', title: '수사 실패', message: `❌ 헛짚었습니다. ${g.position}번째 은신처는 [${g.number}번]이 아닙니다.` });
             newLogs.push(`❌ 수사 실패. ${g.position}번째 은신처는 [${g.number}번]이 아닙니다.`);
             playSynthSound('error');
           } else {
-            addToast({ kind: 'error', title: '일괄 수색 실패', message: '선택한 은신처 중 틀린 칸이 있습니다.' });
+            addToast({ kind: 'error', title: '일괄 수사 실패', message: '❌ 지목한 은신처 중 틀린 번호가 섞여 있습니다.' });
             newLogs.push(`❌ 일괄 수사 실패. 지목한 은신처 중 틀린 추측이 있습니다.`);
             playSynthSound('error');
           }
@@ -829,15 +829,15 @@ function App() {
       // 내 차례 도달 시 벨소리 재생
       if (playerView.viewer === playerView.currentTurn) {
         if (playerView.phase === 'MANHUNT') {
-          addToast({ kind: 'info', title: '내 차례', message: '🚨 최후의 추격 단계입니다! 모든 은신처 번호를 추측하세요!' });
+          addToast({ kind: 'info', title: '🚨 맨헌트 발동!', message: '도망자를 잡을 마지막 기회입니다! 남은 은신처를 모두 추측하세요!' });
         } else {
           const isFirstTurnFugitive = playerView.viewer === 'FUGITIVE' && playerView.board.length === 1;
           if (isFirstTurnFugitive) {
             if (setupDealLocal) {
-              addToast({ kind: 'info', title: '내 차례', message: '초기 카드를 5장 뽑아주세요!' });
+              addToast({ kind: 'info', title: '도주 준비', message: '카드 더미에서 초기 카드 5장을 뽑아주세요.' });
             }
           } else {
-            addToast({ kind: 'info', title: '내 차례', message: '카드를 뽑아주세요.' });
+            addToast({ kind: 'info', title: '내 턴 시작', message: '턴을 시작합니다. 카드 더미에서 1장을 뽑아주세요.' });
           }
         }
         playSynthSound('turn');
@@ -864,15 +864,15 @@ function App() {
       // 내가 플레이할 턴 차례가 도래하면 맑은 알림차임벨 재생
       if (playerView.viewer === playerView.currentTurn) {
         if (playerView.phase === 'MANHUNT') {
-          addToast({ kind: 'info', title: '내 차례', message: '🚨 최후의 추격 단계입니다! 모든 은신처 번호를 추측하세요!' });
+          addToast({ kind: 'info', title: '🚨 맨헌트 발동!', message: '도망자를 잡을 마지막 기회입니다! 남은 은신처를 모두 추측하세요!' });
         } else {
           const isFirstTurnFugitive = playerView.viewer === 'FUGITIVE' && playerView.board.length === 1;
           if (isFirstTurnFugitive) {
             if (setupDealLocal) {
-              addToast({ kind: 'info', title: '내 차례', message: '초기 카드를 5장 뽑아주세요!' });
+              addToast({ kind: 'info', title: '도주 준비', message: '카드 더미에서 초기 카드 5장을 뽑아주세요.' });
             }
           } else {
-            addToast({ kind: 'info', title: '내 차례', message: '카드를 뽑아주세요.' });
+            addToast({ kind: 'info', title: '내 턴 시작', message: '턴을 시작합니다. 카드 더미에서 1장을 뽑아주세요.' });
           }
         }
         playSynthSound('turn');
@@ -965,19 +965,19 @@ function App() {
           const allSucceeded = guess.targets.every((t: any) => playerView.board[t.position]?.revealed);
 
           if (allSucceeded) {
-            addToast({ kind: 'warning', title: '수사 성공당함', message: `🚨 수사관이 내 은신처 수사에 성공했습니다: ${targetNames}` });
+            addToast({ kind: 'warning', title: '은신처 발각!', message: `🚨 수사관에게 꼬리를 밟혔습니다! (발각: ${targetNames})` });
             newLogs.push(`🚨 수사관이 ${targetNames}을(를) 정확히 찾아냈습니다!`);
           } else {
-            addToast({ kind: 'success', title: '수사 회피 성공', message: `👮 수사관이 은신처 추색에 실패했습니다: ${targetNames}` });
+            addToast({ kind: 'success', title: '위기 모면', message: `💨 수사관이 엉뚱한 곳을 짚었습니다. (대상: ${targetNames})` });
             newLogs.push(`💨 수사관이 ${targetNames}을(를) 헛짚었습니다.`);
             playSynthSound('success');
           }
         } else {
           // fallback (수신 데이터 유실 대비)
           if (newlyRevealedCount > 0) {
-            addToast({ kind: 'warning', title: '수사 성공당함', message: `🚨 수사관이 내 은신처를 밝혀냈습니다: ${newlyRevealedDetails.join(', ')}` });
+            addToast({ kind: 'warning', title: '은신처 발각!', message: `🚨 수사관에게 꼬리를 밟혔습니다! (발각: ${newlyRevealedDetails.join(', ')})` });
           } else {
-            addToast({ kind: 'success', title: '수사 회피 성공', message: '👮 수사관이 은신처 추색에 실패했습니다!' });
+            addToast({ kind: 'success', title: '위기 모면', message: '💨 수사관이 엉뚱한 곳을 짚었습니다.' });
             newLogs.push(`💨 수사관이 은신처 수사에 실패했습니다.`);
             playSynthSound('success');
           }
@@ -1074,15 +1074,25 @@ function App() {
             // 만약 재대결 생성 요청인 경우, 상대방에게도 알리고 대기방으로 동시 이동
             if (isRematchingRef.current) {
               isRematchingRef.current = false;
-              if (roomIdRef.current) {
-                client.publish({
-                  destination: `/topic/game/${roomIdRef.current}/guesses`,
-                  body: JSON.stringify({
-                    type: 'REMATCH_START',
-                    newRoomId: newRoomId,
-                    guesserId: playerId
-                  })
-                });
+              const oldRoomId = roomIdRef.current;
+              if (oldRoomId) {
+                const publishRematchStart = () => {
+                  if (client.connected) {
+                    client.publish({
+                      destination: `/topic/game/${oldRoomId}/guesses`,
+                      body: JSON.stringify({
+                        type: 'REMATCH_START',
+                        newRoomId: newRoomId,
+                        guesserId: playerId
+                      })
+                    });
+                  }
+                };
+                
+                // 네트워크 지연 및 일시적인 구독 단절을 감안해 3회 연속 분산 발행하여 신뢰성 보장
+                publishRematchStart();
+                setTimeout(publishRematchStart, 500);
+                setTimeout(publishRematchStart, 1500);
               }
             }
 
@@ -1333,9 +1343,11 @@ function App() {
         if (gameRes.ok) {
           const view: PlayerView = await gameRes.json();
           setPlayerView(view);
-          setScreen('GAME');
-          addToast('진행 중인 세션으로 복구되었습니다!');
-          playSynthSound('success');
+          if (screenRef.current !== 'GAME') {
+            setScreen('GAME');
+            addToast('진행 중인 세션으로 복구되었습니다!');
+            playSynthSound('success');
+          }
         } else {
           localStorage.removeItem('fugitive_roomId');
           localStorage.removeItem('fugitive_gameSeconds');
@@ -1343,8 +1355,10 @@ function App() {
           setScreen('LOBBY');
         }
       } else {
-        setScreen('WAITING');
-        addToast('대기방 세션이 복원되었습니다.');
+        if (screenRef.current !== 'WAITING') {
+          setScreen('WAITING');
+          addToast('대기방 세션이 복원되었습니다.');
+        }
       }
     } catch {
       localStorage.removeItem('fugitive_roomId');
@@ -2823,8 +2837,8 @@ function App() {
                             🎯 초기 손패 구성 단계: 카드 더미 1({setupDealLocal.deck1Queue.length}장)과 더미 2({setupDealLocal.deck2Queue.length}장)를 눌러 카드를 모두 뽑으세요.
                           </span>
                         ) : playerView.viewer === 'MARSHAL' && requiredDraws === 2 ? (
-                          <span style={{ color: 'var(--text-primary)', fontWeight: 'bold', fontSize: '0.82rem' }}>
-                            ⚠️ 수사관 첫 턴 규칙: 카드 더미에서 카드 2장을 연속으로 뽑으세요. (뽑은 카드: {marshalDrawCount}/2장)
+                          <span style={{ color: 'var(--primary)', fontWeight: 'bold', fontSize: '0.82rem' }}>
+                            🎯 수사관 첫 턴 규칙: 카드 더미에서 카드 2장을 연속으로 뽑으세요. (뽑은 카드: {marshalDrawCount}/2장)
                           </span>
                         ) : (
                           <span style={{ color: 'var(--primary)', fontWeight: 'bold', fontSize: '0.82rem' }}>
@@ -3134,7 +3148,7 @@ function App() {
                                 🔍 은신처 일괄 수색
                               </h3>
                               <p style={{ fontSize: '0.82rem', marginBottom: '1.5rem', color: 'var(--text-secondary)', lineHeight: '1.5' }}>
-                                추측하고자 하는 비공개 은신처 번호만 골라서 입력할 수 있습니다. 입력하지 않은 빈칸은 수색에서 제외되며, <strong style={{ color: 'var(--text-primary)' }}>입력한 칸 중 단 하나라도 틀리면 수색 전체가 실패</strong>하고 아무 정보도 공개되지 않습니다.
+                                추측하고자 하는 비공개 은신처 번호만 골라서 입력할 수 있습니다. 입력하지 않은 빈칸은 수색에서 제외되며, <strong style={{ color: 'var(--danger)' }}>입력한 칸 중 단 하나라도 틀리면 수색 전체가 실패</strong>하고 아무 정보도 공개되지 않습니다.
                               </p>
 
                               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem', maxHeight: '280px', overflowY: 'auto', paddingRight: '0.5rem', paddingLeft: '0.1rem' }}>
