@@ -15,6 +15,17 @@ function getSprintValue(cardNumber: number): number {
   return cardNumber % 2 === 0 ? 2 : 1;
 }
 
+// WebSocket 세션 해제 시 발생할 수 있는 CLOSING/CLOSED 상태 오류를 방어하기 위한 안전 구독 해제 함수
+const safeUnsubscribe = (sub: any) => {
+  if (sub) {
+    try {
+      sub.unsubscribe();
+    } catch (e) {
+      console.warn("Unsubscribe skipped (connection closed or closing):", e);
+    }
+  }
+};
+
 
 // Web Audio API를 활용한 효과음 합성 유틸리티 (무설치, 즉시 구동 가능!)
 const playSynthSound = (type: 'click' | 'success' | 'error' | 'turn' | 'draw') => {
@@ -1211,35 +1222,32 @@ function App() {
       
       // 만약 방장이 대기방을 해체(CLOSED)했다면
       if (state.status === 'CLOSED') {
+        // 게임이 종료된 상태(ENDED)라면 재대결 초대(REMATCH_START)를 대기하기 위해 로비로 나가지 않고 대기합니다.
         if (playerViewRef.current?.phase !== 'ENDED') {
           addToast('⚠️ 방장이 대기방을 해제하여 방이 해체되었습니다.');
           playSynthSound('error');
-        }
-        
-        // 로컬 상태 완전히 정리하고 로비로 이동
-        setRoomId('');
-        setRoomState(null);
-        setPlayerView(null);
-        setDeckSumAtTurnStart(0);
-        setMarshalDrawCount(0);
-        setNotepadNotes({});
-        localStorage.removeItem('fugitive_roomId');
-        localStorage.removeItem('fugitive_deckSumAtTurnStart');
-        localStorage.removeItem('fugitive_marshalDrawCount');
-        localStorage.removeItem('fugitive_notepadNotes');
-        localStorage.removeItem('fugitive_gameSeconds');
-        localStorage.removeItem('fugitive_gameStartTime');
-        
-        if (roomSubscriptionRef.current) {
-          roomSubscriptionRef.current.unsubscribe();
+          
+          // 로컬 상태 완전히 정리하고 로비로 이동
+          setRoomId('');
+          setRoomState(null);
+          setPlayerView(null);
+          setDeckSumAtTurnStart(0);
+          setMarshalDrawCount(0);
+          setNotepadNotes({});
+          localStorage.removeItem('fugitive_roomId');
+          localStorage.removeItem('fugitive_deckSumAtTurnStart');
+          localStorage.removeItem('fugitive_marshalDrawCount');
+          localStorage.removeItem('fugitive_notepadNotes');
+          localStorage.removeItem('fugitive_gameSeconds');
+          localStorage.removeItem('fugitive_gameStartTime');
+          
+          safeUnsubscribe(roomSubscriptionRef.current);
           roomSubscriptionRef.current = null;
-        }
-        if (gameSubscriptionRef.current) {
-          gameSubscriptionRef.current.unsubscribe();
+          safeUnsubscribe(gameSubscriptionRef.current);
           gameSubscriptionRef.current = null;
+          setScreen('LOBBY');
+          return;
         }
-        setScreen('LOBBY');
-        return;
       }
 
       setRoomState(state);
