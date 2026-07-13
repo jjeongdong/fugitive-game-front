@@ -2390,7 +2390,7 @@ function App() {
                         도망자 (FUGITIVE)
                       </h2>
                       <p style={{ fontSize: '0.95rem', color: 'var(--text-secondary)', lineHeight: '1.6', marginBottom: '2rem' }}>
-                        당신의 목표는 수사관의 추적을 따돌리고 최종 목적지인 **42번 은신처**를 안전하게 설치하여 탈출하는 것입니다.
+                        당신의 목표는 수사관의 추적을 따돌리고 최종 목적지인 42번 은신처를 안전하게 설치하여 탈출하는 것입니다.
                       </p>
                       <div style={{ background: 'var(--bg-page)', borderRadius: '16px', padding: '1.2rem', border: '1px solid var(--border-color)', textAlign: 'left', display: 'flex', flexDirection: 'column', gap: '0.8rem', marginBottom: '2.5rem' }}>
                         <h4 style={{ fontSize: '0.9rem', margin: 0, color: 'var(--text-primary)', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.6rem' }}>
