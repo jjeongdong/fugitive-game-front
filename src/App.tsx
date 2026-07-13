@@ -796,22 +796,22 @@ function App() {
           if (pendingGuess.length === 1) {
             const g = pendingGuess[0];
             addToast({ kind: 'success', title: '수사 성공', message: `은신처${g.position}은 ${g.number}가 맞습니다.` });
-            newLogs.push(`🎯 수사 성공: 은신처${g.position}은 ${g.number}가 맞습니다.`);
+            newLogs.push(`🎯 수사 성공! ${g.position}번째 은신처는 [${g.number}번]이 맞습니다.`);
             playSynthSound('success');
           } else {
             addToast({ kind: 'success', title: '일괄 수색 성공', message: '모든 비공개 은신처가 공개되었습니다.' });
-            newLogs.push(`🎯 일괄 수색 성공: 선택한 비공개 은신처가 모두 공개됨`);
+            newLogs.push(`🎯 일괄 수사 성공! 지목한 은신처들을 모두 찾아냈습니다.`);
             playSynthSound('success');
           }
         } else {
           if (pendingGuess.length === 1) {
             const g = pendingGuess[0];
             addToast({ kind: 'error', title: '수사 실패', message: `은신처${g.position}은 ${g.number}가 아닙니다.` });
-            newLogs.push(`❌ 수사 실패: 은신처${g.position}은 ${g.number}가 아닙니다.`);
+            newLogs.push(`❌ 수사 실패. ${g.position}번째 은신처는 [${g.number}번]이 아닙니다.`);
             playSynthSound('error');
           } else {
             addToast({ kind: 'error', title: '일괄 수색 실패', message: '선택한 은신처 중 틀린 칸이 있습니다.' });
-            newLogs.push(`❌ 일괄 수색 실패: 선택한 비공개 은신처 중 오답 존재`);
+            newLogs.push(`❌ 일괄 수사 실패. 지목한 은신처 중 틀린 추측이 있습니다.`);
             playSynthSound('error');
           }
         }
@@ -821,9 +821,9 @@ function App() {
 
     if (!prevView) {
       setActionLog([
-        `게임 시작!`,
-        `내 역할은 [${translateRole(playerView.viewer)}]입니다.`,
-        `현재 차례: ${translateRole(playerView.currentTurn)}`
+        `🔄 게임 세션에 연결되었습니다.`,
+        `당신의 역할은 [${translateRole(playerView.viewer)}]입니다.`,
+        `현재 차례: [${translateRole(playerView.currentTurn)}]`
       ]);
       setHasDrawnThisTurn(false);
       // 내 차례 도달 시 벨소리 재생
@@ -848,7 +848,7 @@ function App() {
 
     // 1. 턴 변경 감지
     if (prevView.currentTurn !== playerView.currentTurn) {
-      newLogs.push(`--- ${translateRole(playerView.currentTurn)}의 차례가 시작되었습니다 ---`);
+      newLogs.push(`▶️ [${translateRole(playerView.currentTurn)}]의 턴입니다.`);
       setHasDrawnThisTurn(false);
       if (playerView.currentTurn === 'MARSHAL') {
         const currentSum = playerView.deck1Count + playerView.deck2Count + playerView.deck3Count;
@@ -887,7 +887,7 @@ function App() {
 
     if (playerView.viewer === 'FUGITIVE') {
       if (newHandLen > oldHandLen && selectedHideoutCard === null) {
-        newLogs.push(`👤 당신이 새로운 카드를 1장 뽑았습니다.`);
+        newLogs.push(`👤 카드 더미에서 1장을 뽑았습니다.`);
         setHasDrawnThisTurn(true);
         playSynthSound('draw');
         
@@ -900,18 +900,18 @@ function App() {
         }
       }
       if (newOppHand > oldOppHand) {
-        newLogs.push(`👮 수사관이 카드를 1장 뽑았습니다.`);
+        newLogs.push(`👮 수사관이 카드를 1장 가져갔습니다.`);
       }
     } else {
       if (newOppHand > oldOppHand) {
-        newLogs.push(`👤 도망자가 카드를 1장 뽑았습니다.`);
+        newLogs.push(`👤 도망자가 카드를 1장 가져갔습니다.`);
       }
       const deckCountDiff = 
         (prevView.deck1Count - playerView.deck1Count) +
         (prevView.deck2Count - playerView.deck2Count) +
         (prevView.deck3Count - playerView.deck3Count);
       if (deckCountDiff > 0 && newOppHand === oldOppHand) {
-        newLogs.push(`👮 당신이 카드를 1장 뽑았습니다.`);
+        newLogs.push(`👮 카드 더미에서 1장을 뽑았습니다.`);
         setMarshalDrawCount(prev => prev + deckCountDiff);
         playSynthSound('draw');
         
@@ -929,8 +929,8 @@ function App() {
     if (playerView.board.length > prevView.board.length) {
       const addedCount = playerView.board.length - prevView.board.length;
       const lastHideout = playerView.board[playerView.board.length - 1];
-      const details = lastHideout.sprintCount > 0 ? ` (도약 카드 ${lastHideout.sprintCount}장 사용)` : '';
-      newLogs.push(`👤 도망자가 새로운 은신처 ${addedCount}곳을 배치했습니다${details}.`);
+      const details = lastHideout.sprintCount > 0 ? ` (👟 도약 ${lastHideout.sprintCount}장 사용)` : '';
+      newLogs.push(`👣 도망자가 새로운 은신처 ${addedCount}곳에 숨았습니다.${details}`);
       playSynthSound('success');
     }
 
@@ -943,7 +943,7 @@ function App() {
       if (hideout.revealed && prevHideout && !prevHideout.revealed) {
         newlyRevealedCount++;
         newlyRevealedDetails.push(`은신처${idx}(${hideout.number}번)`);
-        newLogs.push(`🎯 은신처${idx}의 실체가 밝혀졌습니다! (${hideout.number}번 카드)`);
+        newLogs.push(`🚨 ${idx}번째 은신처가 발각되었습니다! (정체: ${hideout.number}번)`);
         // 도망자 시점에서는 경고음을, 수사관 시점에서는 성공음 재생
         if (playerView.viewer === 'FUGITIVE') {
           playSynthSound('error');
@@ -966,10 +966,10 @@ function App() {
 
           if (allSucceeded) {
             addToast({ kind: 'warning', title: '수사 성공당함', message: `🚨 수사관이 내 은신처 수사에 성공했습니다: ${targetNames}` });
-            newLogs.push(`👮 수사관이 ${targetNames} 수사에 성공했습니다!`);
+            newLogs.push(`🚨 수사관이 ${targetNames}을(를) 정확히 찾아냈습니다!`);
           } else {
             addToast({ kind: 'success', title: '수사 회피 성공', message: `👮 수사관이 은신처 추색에 실패했습니다: ${targetNames}` });
-            newLogs.push(`❌ 수사관이 ${targetNames} 수사에 실패했습니다.`);
+            newLogs.push(`💨 수사관이 ${targetNames}을(를) 헛짚었습니다.`);
             playSynthSound('success');
           }
         } else {
@@ -978,7 +978,7 @@ function App() {
             addToast({ kind: 'warning', title: '수사 성공당함', message: `🚨 수사관이 내 은신처를 밝혀냈습니다: ${newlyRevealedDetails.join(', ')}` });
           } else {
             addToast({ kind: 'success', title: '수사 회피 성공', message: '👮 수사관이 은신처 추색에 실패했습니다!' });
-            newLogs.push(`❌ 수사관이 은신처 추색에 실패했습니다.`);
+            newLogs.push(`💨 수사관이 은신처 수사에 실패했습니다.`);
             playSynthSound('success');
           }
         }
@@ -990,7 +990,7 @@ function App() {
           lastReceivedGuessRef.current = null;
           const targetNames = guess.targets.map((t: any) => `은신처${t.position}(${t.number}번)`).join(', ');
           addToast({ kind: 'warning', title: '최후의 추격 성공당함', message: `🚨 수사관이 내 은신처를 찾아냈습니다: ${targetNames}` });
-          newLogs.push(`👮 수사관이 최후의 추격으로 ${targetNames} 수사에 성공했습니다!`);
+          newLogs.push(`👮 수사관이 끈질긴 추격 끝에 ${targetNames}을(를) 찾아냈습니다!`);
         } else if (newlyRevealedCount > 0) {
           addToast({ kind: 'warning', title: '최후의 추격 성공당함', message: `🚨 수사관이 내 은신처를 찾아냈습니다: ${newlyRevealedDetails.join(', ')}` });
         }
@@ -1001,7 +1001,7 @@ function App() {
         if (guess) {
           lastReceivedGuessRef.current = null;
           const targetNames = guess.targets.map((t: any) => `은신처${t.position}(${t.number}번)`).join(', ');
-          newLogs.push(`❌ 수사관이 최후의 추격(${targetNames})에 실패하여 도망자가 탈출에 성공했습니다!`);
+          newLogs.push(`✈️ 수사관이 ${targetNames} 수사에 실패했습니다. 도망자가 무사히 탈출합니다!`);
         }
       }
     }
@@ -1009,10 +1009,10 @@ function App() {
     // 5. 게임 단계 전환 감지
     if (prevView.phase !== playerView.phase) {
       if (playerView.phase === 'MANHUNT') {
-        newLogs.push(`🚨 맨헌트(최종 추격) 단계가 발동되었습니다! 숨막히는 도망자의 마지막 도주극!`);
+        newLogs.push(`🚨 맨헌트 발동! 수사관의 마지막 맹추격이 시작됩니다!`);
         playSynthSound('turn');
       } else if (playerView.phase === 'ENDED') {
-        newLogs.push(`🏁 게임 종료! 최종 승리자: ${translateRole(playerView.winner || '')}`);
+        newLogs.push(`🏁 게임 종료! 🏆 [${translateRole(playerView.winner || '')}]의 승리입니다!`);
         playSynthSound('success');
       }
     }
@@ -1118,7 +1118,9 @@ function App() {
             localStorage.setItem('fugitive_gameSeconds', '0');
             localStorage.setItem('fugitive_gameStartTime', Date.now().toString());
             
-            setActionLog([`🎮 게임 시작! 내 역할: ${view.viewer === 'FUGITIVE' ? '도망자' : '수사관'}. 현재 차례: ${view.currentTurn === 'FUGITIVE' ? '도망자' : '수사관'}`]);
+            const viewerStr = view.viewer === 'FUGITIVE' ? '도망자' : '수사관';
+            const turnStr = view.currentTurn === 'FUGITIVE' ? '도망자 👤' : '수사관 👮';
+            setActionLog([`🎮 게임이 시작되었습니다! 당신은 [${viewerStr}]입니다. 첫 턴은 [${turnStr}]입니다.`]);
             addToast('게임이 시작되었습니다! 건승을 빕니다.');
             playSynthSound('success');
 
@@ -2821,7 +2823,7 @@ function App() {
                             🎯 초기 손패 구성 단계: 카드 더미 1({setupDealLocal.deck1Queue.length}장)과 더미 2({setupDealLocal.deck2Queue.length}장)를 눌러 카드를 모두 뽑으세요.
                           </span>
                         ) : playerView.viewer === 'MARSHAL' && requiredDraws === 2 ? (
-                          <span style={{ color: 'var(--danger)', fontWeight: 'bold', fontSize: '0.82rem' }}>
+                          <span style={{ color: 'var(--text-primary)', fontWeight: 'bold', fontSize: '0.82rem' }}>
                             ⚠️ 수사관 첫 턴 규칙: 카드 더미에서 카드 2장을 연속으로 뽑으세요. (뽑은 카드: {marshalDrawCount}/2장)
                           </span>
                         ) : (
@@ -3014,7 +3016,7 @@ function App() {
                             </div>
 
                             {selectedHideoutCard <= getLastHideoutNumber() && (
-                              <div style={{ color: 'var(--danger)', marginTop: '0.8rem', fontSize: '0.8rem', fontWeight: 600, textAlign: 'center', background: 'var(--danger-bg)', padding: '0.5rem', borderRadius: '8px' }}>
+                              <div style={{ color: 'var(--text-primary)', marginTop: '0.8rem', fontSize: '0.8rem', fontWeight: 600, textAlign: 'center', background: 'var(--danger-bg)', padding: '0.5rem', borderRadius: '8px' }}>
                                 ⚠️ 새 은신처는 직전 은신처({getLastHideoutNumber()})보다 높은 번호의 카드여야 합니다.
                               </div>
                             )}
@@ -3132,7 +3134,7 @@ function App() {
                                 🔍 은신처 일괄 수색
                               </h3>
                               <p style={{ fontSize: '0.82rem', marginBottom: '1.5rem', color: 'var(--text-secondary)', lineHeight: '1.5' }}>
-                                추측하고자 하는 비공개 은신처 번호만 골라서 입력할 수 있습니다. 입력하지 않은 빈칸은 수색에서 제외되며, <strong style={{ color: 'var(--danger)' }}>입력한 칸 중 단 하나라도 틀리면 수색 전체가 실패</strong>하고 아무 정보도 공개되지 않습니다.
+                                추측하고자 하는 비공개 은신처 번호만 골라서 입력할 수 있습니다. 입력하지 않은 빈칸은 수색에서 제외되며, <strong style={{ color: 'var(--text-primary)' }}>입력한 칸 중 단 하나라도 틀리면 수색 전체가 실패</strong>하고 아무 정보도 공개되지 않습니다.
                               </p>
 
                               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem', maxHeight: '280px', overflowY: 'auto', paddingRight: '0.5rem', paddingLeft: '0.1rem' }}>
@@ -3330,13 +3332,20 @@ function App() {
                   <div className="log-panel" ref={logPanelRef}>
                     {actionLog.map((log, index) => {
                       let logClass = 'log-entry-info';
-                      if (log.startsWith('👤')) logClass = 'FUGITIVE';
-                      if (log.startsWith('👮') || log.startsWith('🎯') || log.startsWith('❌') || log.startsWith('🚨')) logClass = 'MARSHAL';
+                      if (log.startsWith('👤') || log.startsWith('👣')) logClass = 'FUGITIVE';
+                      if (
+                        log.startsWith('👮') || 
+                        log.startsWith('🎯') || 
+                        log.startsWith('❌') || 
+                        log.startsWith('🚨') ||
+                        log.startsWith('💨') ||
+                        log.startsWith('✈️')
+                      ) logClass = 'MARSHAL';
                       
                       // 마우스 호버 시 보드 카드 피드백
                       let targetIdx: number | null = null;
                       if (log.includes('은신처') || log.includes('Slot')) {
-                        const match = log.match(/(?:은신처\s*#?|Slot\s*#?)(\d+)(?!\s*곳)/);
+                        const match = log.match(/(?:은신처\s*#?|Slot\s*#?)(\d+)(?!\s*곳)/) || log.match(/(\d+)(?:번째\s*)은신처/);
                         if (match) {
                           targetIdx = parseInt(match[1], 10);
                         }
