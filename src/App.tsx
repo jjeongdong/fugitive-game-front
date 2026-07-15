@@ -941,7 +941,7 @@ function App() {
       const addedCount = playerView.board.length - prevView.board.length;
       const lastHideout = playerView.board[playerView.board.length - 1];
       const details = lastHideout.sprintCount > 0 ? ` (👟 도약 ${lastHideout.sprintCount}장 사용)` : '';
-      newLogs.push(`👣 도망자가 새로운 은신처 ${addedCount}곳에 숨았습니다.${details}`);
+      newLogs.push(`👣 도망자가 새로운 은신처 ${addedCount}곳에 숨었습니다.${details}`);
       playSynthSound('success');
     }
 
@@ -3215,7 +3215,7 @@ function App() {
                                 <button className="btn btn-secondary" style={{ flex: 1, borderRadius: '10px', padding: '0.75rem' }} onClick={() => setIsMultiGuessMode(false)}>
                                   취소
                                 </button>
-                              </div>\
+                              </div>
                             </div>
                           </div>
                         )}
